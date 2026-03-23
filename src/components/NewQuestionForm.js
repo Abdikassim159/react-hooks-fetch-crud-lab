@@ -8,11 +8,7 @@ export default function NewQuestionForm({ onAdd }) {
   function handleSubmit(e) {
     e.preventDefault();
 
-    const newQuestion = {
-      prompt,
-      answers,
-      correctIndex,
-    };
+    const newQuestion = { prompt, answers, correctIndex };
 
     fetch("http://localhost:4000/questions", {
       method: "POST",
@@ -22,7 +18,9 @@ export default function NewQuestionForm({ onAdd }) {
       body: JSON.stringify(newQuestion),
     })
       .then((res) => res.json())
-      .then((data) => onAdd(data));
+      .then((data) => {
+        onAdd(data); // 🔥 ONLY THIS
+      });
   }
 
   function handleAnswerChange(value, index) {
@@ -33,33 +31,34 @@ export default function NewQuestionForm({ onAdd }) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="Question"
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-      />
+      <label>
+        Prompt
+        <input value={prompt} onChange={(e) => setPrompt(e.target.value)} />
+      </label>
 
       {answers.map((ans, i) => (
-        <input
-          key={i}
-          type="text"
-          placeholder={`Answer ${i}`}
-          value={ans}
-          onChange={(e) => handleAnswerChange(e.target.value, i)}
-        />
+        <label key={i}>
+          Answer {i + 1}
+          <input
+            value={ans}
+            onChange={(e) => handleAnswerChange(e.target.value, i)}
+          />
+        </label>
       ))}
 
-      <select
-        value={correctIndex}
-        onChange={(e) => setCorrectIndex(Number(e.target.value))}
-      >
-        {answers.map((_, i) => (
-          <option key={i} value={i}>
-            Correct Answer {i}
-          </option>
-        ))}
-      </select>
+      <label>
+        Correct Answer
+        <select
+          value={correctIndex}
+          onChange={(e) => setCorrectIndex(Number(e.target.value))}
+        >
+          {answers.map((_, i) => (
+            <option key={i} value={i}>
+              {i + 1}
+            </option>
+          ))}
+        </select>
+      </label>
 
       <button type="submit">Add Question</button>
     </form>
